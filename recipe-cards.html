@@ -115,17 +115,6 @@
   .tip svg{flex-shrink:0;margin-top:1px;}
 
   /* timer */
-  .timer{margin-top:13px;background:var(--paper);border-radius:12px;padding:12px;}
-  .tdisplay{font-family:Georgia,serif;font-size:32px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.01em;line-height:1;margin-bottom:11px;}
-  .tdisplay.ringing{color:var(--green);animation:pulse .7s infinite;}
-  @keyframes pulse{50%{opacity:.4;}}
-  .tbtns{display:flex;gap:7px;}
-  .tbtn{flex:1;border:none;border-radius:9px;padding:9px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;transition:.12s;}
-  .tbtn.go{background:var(--green);color:#fff;}
-  .tbtn.go:hover{background:var(--green-deep);}
-  .tbtn.ghost{background:#e9e4d7;color:var(--ink);}
-  .tbtn.ghost:hover{background:#ddd6c5;}
-
   /* parallel */
   .par-banner{background:var(--blue-wash);border:1px solid #c3d4ee;border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px;display:flex;gap:7px;align-items:center;}
   .par-grid{display:grid;gap:10px;}
@@ -136,9 +125,6 @@
   .par-col.main .par-label{color:var(--blue);}
   .par-col.side .par-label{color:var(--amber);}
   .par-text{font-size:13.5px;line-height:1.45;}
-  .par-done-notice{background:var(--green-wash);border:1px solid #bcdcc6;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--green-deep);font-weight:600;margin-top:12px;display:none;align-items:center;gap:8px;}
-  .par-done-notice.show{display:flex;}
-  .par-col .timer{margin-top:10px;background:rgba(255,255,255,.55);}
 
   /* nav */
   .nav{display:flex;gap:10px;margin-top:18px;}
@@ -225,12 +211,12 @@ const RECIPES = [
       {n:"Salt", q:"pinch"}
     ],
     steps:[
-      {text:"Start the rice. Tip the rinsed rice into a small pan with 200ml cold water and a small pinch of salt. Bring to a fast boil (big rolling bubbles), then drop to the lowest heat and put the lid on tight.", tip:"Low heat and a tight lid is everything. Bubbling too hard burns the bottom before the top has cooked. Don't lift the lid, the trapped steam is what cooks the grains.", timer:720},
+      {text:"Start the rice. Tip the rinsed rice into a small pan with 200ml cold water and a small pinch of salt. Bring to a fast boil (big rolling bubbles), then drop to the lowest heat and put the lid on tight. Set a timer for 12 minutes and move straight to the next step — the salmon and greens cook while the rice steams.", tip:"Low heat and a tight lid is everything. Bubbling too hard burns the bottom before the top has cooked. Don't lift the lid, the trapped steam is what cooks the grains.", timer:720},
       {parallel:{
-        main:{text:"Cook the salmon. Heat a dry non-stick frying pan on medium for 1 minute. Lay one fillet in skin-side down and press it flat with a fish slice for 10 seconds so the whole skin meets the pan. Leave it.", tip:"Medium, not high. Salmon skin catches and burns fast on high heat. It should sizzle gently, not crackle and spit.", timer:300},
-        side:{text:"Steam the greens. In a second pan bring 2cm of water and a pinch of salt to the boil. Add the broccoli and the frozen edamame.", tip:"Broccoli is ready when a fork slides in with a little resistance and it's still bright green, never grey and soft.", timer:240}
+        main:{text:"Cook the salmon skin-side down. Heat a dry non-stick frying pan on medium for 1 minute. Lay one fillet in skin-side down and press it flat with a fish slice for 10 seconds so the whole skin meets the pan. Leave it completely alone for 5 minutes. You'll know it's ready to flip when the flesh has turned pale pink two-thirds of the way up the side — you can see this from the edge of the fillet without touching it.", tip:"Medium, not high. Salmon skin catches and burns fast on high heat. It should sizzle gently, not crackle and spit.", timer:300},
+        side:{text:"Steam the greens. In a second pan bring 2cm of water and a pinch of salt to the boil. Add the broccoli and the frozen edamame. Cook for 4 minutes.", tip:"Broccoli is ready when a fork slides in with a little resistance and it's still bright green, never grey and soft.", timer:240}
       }},
-      {text:"Glaze and finish the salmon. It's ready to turn when the flesh has gone pale pink two-thirds of the way up the side. Flip it, spoon over half the glaze and cook for 2 more minutes.", tip:"Cooked salmon flakes into clean chunks under light fork pressure and looks opaque, not glassy, in the middle.", timer:120},
+      {text:"Flip and glaze the salmon. Use a fish slice to turn the fillet over onto its flesh side. Spoon the miso glaze you made earlier over the top of the fillet, covering it evenly. Cook for 2 more minutes. The salmon is done when it flakes apart easily under light pressure from a fork and looks opaque all the way through, not glassy or translucent.", tip:"Don't press down on the salmon while it cooks flesh-side down — you'll squeeze out the moisture. Just let it sit.", timer:120},
       {text:"Dress the greens. Drop the halved pak choi into the greens pan for the last 1 minute, just until the leaves wilt and the stems turn tender. Drain everything well, then toss with 1 tsp sesame oil, the sliced raw garlic, and a squeeze of the leftover zested lemon half.", tip:"Tossing the garlic in raw and warm off the heat keeps it sharp and fresh without the bitterness of burnt garlic. The lemon juice lifts the whole dish without overpowering the miso glaze.", timer:null},
       {text:"Plate up. Spoon the rice into a bowl, pile the greens alongside and sit the salmon on top. Drizzle over the last of the glaze and scatter with 1 tsp sesame seeds.", tip:"Per serving: about 41g protein, 575 kcal.", timer:null}
     ]
@@ -261,11 +247,12 @@ const RECIPES = [
       {n:"Salt", q:"≈1 tsp"}
     ],
     steps:[
-      {text:"Brown the chicken. Heat 1 tbsp olive oil in a wide pan on medium-high for 1 minute until it looks shimmery and runs thin when you tilt the pan. Lay the thighs in and don't move them.", tip:"Leave them completely alone. That golden-brown crust is pure flavour and it only forms if the meat sits still. If a piece sticks when you try to lift it, it isn't ready to turn yet.", timer:300},
-      {text:"Turn and brown the other side. Lift an edge: the underside should be deep golden brown. Flip each piece and brown the second side, then lift the chicken onto a plate for now. Leave the pan as it is.", tip:"Don't clean the pan. Those brown bits stuck to the base are flavour you'll lift back into the sauce in a moment.", timer:240},
-      {text:"Soften the onion and garlic. Drop the heat to medium. Add the chopped onion with a small pinch of salt and cook, stirring, until soft and translucent (see-through, not browned). Add the garlic for the last 30 seconds.", tip:"Garlic burns in under a minute and turns bitter, so it always goes in last, once the onion has softened.", timer:240},
-      {text:"Build the sauce. Pour in the chopped tomatoes, the drained lentils, the 100ml stock and 1 tsp mixed dried herbs. Stir, scraping the base to lift the brown bits. Sit the chicken back in with any juices and bring to a gentle bubble.", tip:"A gentle bubble, not a rolling boil. You want it to thicken just enough to coat the back of a spoon.", timer:360},
-      {text:"Wilt the spinach. Stir in the 150g spinach a handful at a time until it collapses into the sauce. Check the chicken: cut into the thickest thigh, it should be white all the way through with no pink and the juices should run clear. Add a small pinch of salt, taste, and plate up.", tip:"Per serving: about 46g protein, 555 kcal.", timer:120}
+      {text:"Brown the chicken. Heat 1 tbsp olive oil in a wide pan on medium-high for 1 minute until it looks shimmery and runs thin when you tilt the pan. Lay the thighs in and don't move them for 5 minutes.", tip:"Leave them completely alone. That golden-brown crust is pure flavour and it only forms if the meat sits still. If a piece sticks when you try to lift it, it isn't ready to turn yet.", timer:300},
+      {text:"Turn and brown the other side. Lift an edge: the underside should be deep golden brown. Flip each piece and brown the second side for 4 minutes, then lift the chicken onto a plate for now. Leave the pan as it is.", tip:"Don't clean the pan. Those brown bits stuck to the base are flavour you'll lift back into the sauce in a moment.", timer:240},
+      {text:"Soften the onion and garlic. Drop the heat to medium. Add the chopped onion with a small pinch of salt and cook, stirring, for about 4 minutes until soft and translucent (see-through, not browned). Add the garlic for the last 30 seconds.", tip:"Garlic burns in under a minute and turns bitter, so it always goes in last, once the onion has softened.", timer:240},
+      {text:"Build the sauce. Pour in the chopped tomatoes, the drained lentils, the 100ml stock and 1 tsp mixed dried herbs. Stir, scraping the base to lift the brown bits. Sit the chicken back in with any juices and bring to a gentle bubble. Simmer for 6 minutes.", tip:"A gentle bubble, not a rolling boil. You want it to thicken just enough to coat the back of a spoon.", timer:360},
+      {text:"Wilt the spinach. Add the 150g spinach a large handful at a time, stirring each handful in before adding the next. It will look like a lot but collapses quickly. Once all the spinach has wilted into the sauce, take the pan off the heat.", tip:"Frozen spinach can go in all at once — just break up any clumps as it heats through.", timer:120},
+      {text:"Check the chicken is cooked through. Pick out the thickest thigh and cut into the middle with a knife. The meat should be white all the way through with no pink remaining and the juices should run clear, not pink. If it needs more time, put the pan back on a low heat for 2 more minutes and check again. Add a small pinch of salt, stir, and plate up.", tip:"Per serving: about 46g protein, 555 kcal.", timer:null},
     ]
   },
   {
@@ -296,11 +283,11 @@ const RECIPES = [
       {n:"Salt", q:"pinch"}
     ],
     steps:[
-      {text:"Sizzle the garlic. Heat 1 tbsp olive oil in a wide pan on medium for 1 minute. Add the sliced garlic.", tip:"Keep it on medium. Garlic should turn pale gold and smell sweet and nutty. The moment it browns it turns bitter, so don't walk away.", timer:60},
-      {text:"Soften the courgette. Add the diced courgette and a small pinch of salt. Cook, stirring now and then.", tip:"Ready when the edges are golden and a fork slides through a cube easily with no crunch left.", timer:240},
+      {text:"Sizzle the garlic. Heat 1 tbsp olive oil in a wide pan on medium for 1 minute. Add the sliced garlic and cook for 1 minute.", tip:"Keep it on medium. Garlic should turn pale gold and smell sweet and nutty. The moment it browns it turns bitter, so don't walk away.", timer:60},
+      {text:"Soften the courgette. Add the diced courgette and a small pinch of salt. Cook, stirring now and then, for 4 minutes.", tip:"Ready when the edges are golden and a fork slides through a cube easily with no crunch left.", timer:240},
       {text:"Toast the orzo and add tomatoes. Tip in the 160g orzo and the halved tomatoes. Stir for 1 minute so every grain of orzo gets coated in the oil.", tip:"A quick toast gives the orzo a nuttier flavour and stops the grains clumping together later.", timer:60},
-      {text:"Simmer the orzo. Pour in the 500ml hot stock. Bring to a gentle bubble and cook, stirring every couple of minutes so nothing sticks to the base.", tip:"Done when the orzo is tender with the tiniest bite left and the liquid has reduced to a loose, creamy sauce. If it dries out before then, splash in a little more hot water.", timer:540},
-      {text:"Cook the prawns through. Stir in the prawns and cook until every one has turned from grey-blue to pink and curled into a loose C-shape.", tip:"A loose C is perfect. A tight O-shape means overcooked and rubbery, so pull them off the heat the moment there's no grey left.", timer:180},
+      {text:"Simmer the orzo. Pour in the 500ml hot stock and stir everything together. Bring to a gentle bubble and cook for about 9 minutes, stirring every couple of minutes to stop it sticking to the base. If it looks like it's drying out before it's cooked, add a small splash of hot water and keep going.", tip:"Done when the orzo is tender with the tiniest bite left and the liquid has reduced to a loose, creamy sauce that coats the back of a spoon.", timer:540},
+      {text:"Cook the prawns through. Stir in the prawns and cook for about 3 minutes until every one has turned from grey-blue to pink and curled into a loose C-shape.", tip:"A loose C is perfect. A tight O-shape means overcooked and rubbery, so pull them off the heat the moment there's no grey left.", timer:180},
       {text:"Finish. Off the heat, stir through the lemon zest, 20g of the parmesan and a small pinch of salt. Plate up and scatter over the last 10g parmesan.", tip:"Per serving: about 44g protein, 575 kcal.", timer:null}
     ]
   },
@@ -327,9 +314,9 @@ const RECIPES = [
       {n:"Black pepper", q:"pinch"}
     ],
     steps:[
-      {text:"Cook the veg. Heat 1 tsp olive oil in a non-stick frying pan on medium for 1 minute. Add the sliced mushrooms and a small pinch of salt. After 2 minutes add the spinach and tomatoes for the last 1 minute until the spinach has fully wilted.", tip:"Mushrooms are ready when they've shrunk, turned golden and released then reabsorbed their water. That's when they taste savoury rather than squeaky.", timer:180},
+      {text:"Cook the veg. Heat 1 tsp olive oil in a non-stick frying pan on medium for 1 minute. Add the sliced mushrooms and a small pinch of salt and cook for 2 minutes, stirring once or twice. Then add the spinach and cherry tomatoes and cook for 1 more minute until the spinach has fully wilted and collapsed.", tip:"Mushrooms are ready when they've shrunk, turned golden and released then reabsorbed their water. That's when they taste savoury rather than squeaky.", timer:180},
       {text:"Add the eggs. Pour the beaten eggs over the veg and tilt the pan so they spread into an even layer. Leave it without touching for 30 seconds.", tip:"Don't stir. Let the bottom set into a single sheet, that's what holds the omelette together.", timer:30},
-      {text:"Pull and set. With a spatula, pull the set edges into the middle and tilt the pan so the runny egg flows into the gaps. Repeat until the top is only just barely wet.", tip:"Take it off while the top still looks a touch glossy. It keeps cooking on the plate, and an overcooked omelette goes rubbery.", timer:120},
+      {text:"Pull and set the omelette. Using a spatula, push one edge of the egg into the middle of the pan, then tilt the pan slightly so the runny egg on top flows into the gap you just made. Move to the next edge and do the same thing — push in, tilt, let the runny egg flow in. Keep going around the pan like this for about 2 minutes until the top of the omelette looks just barely set, still a little glossy but not wet and sloshing.", tip:"Pull it off the heat while the top still looks slightly underdone. It carries on cooking from the heat of the pan once you plate it up, and an overcooked omelette goes rubbery and dry.", timer:120},
       {text:"Add salmon and fold. Scatter the smoked salmon over one half. Fold the empty half over it with the spatula and slide it onto a plate.", tip:"Per serving: about 31g protein, 330 kcal.", timer:null}
     ]
   }
@@ -374,36 +361,10 @@ const pantryState = SHOP.pantry.map(() => 0);
 let active = 0;
 let view = "meals"; // "meals" | "shop"
 let tab = "ing";
-let cook = {}; // per recipe: {step, done:Set, timers:{}}
+let cook = {}; // per recipe: {step, done:Set}
 
-function initCook(){ cook = {}; RECIPES.forEach((r,i)=>cook[i]={step:0,done:new Set(),timers:{}}); }
+function initCook(){ cook = {}; RECIPES.forEach((r,i)=>cook[i]={step:0,done:new Set()}); }
 initCook();
-
-function fmt(s){ const m=Math.floor(s/60), x=s%60; return m+":"+String(x).padStart(2,"0"); }
-
-/* ---- timer engine ---- */
-const T = {}; // key -> {remaining, total, running, intervalId}
-function timerKey(ri,si,which){ return ri+"-"+si+"-"+(which||"m"); }
-function ensureTimer(key,total){ if(!T[key]) T[key]={remaining:total,total:total,running:false,iv:null,done:false}; return T[key]; }
-function tick(key){
-  const t=T[key]; if(!t||!t.running) return;
-  t.remaining--;
-  if(t.remaining<=0){ t.remaining=0; t.running=false; clearInterval(t.iv); t.done=true; checkParallelDone(key); }
-  paintTimer(key);
-}
-function startTimer(key){ const t=T[key]; if(!t||t.running||t.remaining<=0) return; t.running=true; t.iv=setInterval(()=>tick(key),1000); paintTimer(key); }
-function pauseTimer(key){ const t=T[key]; if(!t) return; t.running=false; clearInterval(t.iv); paintTimer(key); }
-function resetTimer(key){ const t=T[key]; if(!t) return; t.running=false; clearInterval(t.iv); t.remaining=t.total; t.done=false; paintTimer(key); checkParallelDone(key); }
-function paintTimer(key){
-  const el=document.querySelector('[data-disp="'+key+'"]'); if(el){ el.textContent=fmt(T[key].remaining); el.classList.toggle("ringing",T[key].done); }
-  const go=document.querySelector('[data-go="'+key+'"]'); if(go) go.textContent=T[key].running?"Running…":(T[key].done?"Done":(T[key].remaining<T[key].total?"Resume":"Start timer"));
-}
-function checkParallelDone(key){
-  // key like ri-si-m or ri-si-s ; if both exist and done, show notice
-  const parts=key.split("-"); const base=parts[0]+"-"+parts[1];
-  const m=T[base+"-m"], s=T[base+"-s"];
-  if(m&&s){ const notice=document.querySelector('[data-pnotice="'+base+'"]'); if(notice) notice.classList.toggle("show", m.done&&s.done); }
-}
 
 /* ---- top-level view ---- */
 function render(){
@@ -485,6 +446,7 @@ function renderCook(r){
       <div class="progmeta"><span>Step ${st.step+1} of ${total}<\/span><span>${st.done.size}/${total} done<\/span><\/div>
       <div class="progbar"><div class="progfill" style="width:${pct}%"><\/div><\/div>
     <\/div>`;
+  const isLastStep=(st.step===total-1);
   r.steps.forEach((s,i)=>{
     const isDone=st.done.has(i), isActive=i===st.step, isFuture=i>st.step;
     const cls=isDone?"done":(isActive?"active":(isFuture?"future":""));
@@ -497,24 +459,23 @@ function renderCook(r){
           ${isDone?'<span class="donetick">✓ Done<\/span>':''}
         <\/div>`;
       if(isActive){
-        const mk=timerKey(active,i,"m"), sk=timerKey(active,i,"s");
-        ensureTimer(mk,s.parallel.main.timer); ensureTimer(sk,s.parallel.side.timer);
         html+=`
-          <div class="par-banner">⏱ Start both timers together. The second pan begins at the same time as the first.<\/div>
+          <div class="par-banner">Two pans running at the same time — start both together.<\/div>
           <div class="par-grid">
             <div class="par-col main">
               <div class="par-label">Main pan<\/div>
               <div class="par-text">${s.parallel.main.text}<\/div>
-              ${timerBlock(mk)}
             <\/div>
             <div class="par-col side">
               <div class="par-label">At the same time<\/div>
               <div class="par-text">${s.parallel.side.text}<\/div>
-              ${timerBlock(sk)}
             <\/div>
           <\/div>
-          <div class="par-done-notice" data-pnotice="${active}-${i}">✓ Both pans done. Move on to the next step.<\/div>
-          <div class="tip">${tipIcon()}<span>${s.parallel.main.tip} ${s.parallel.side.tip}<\/span><\/div>`;
+          <div class="tip">${tipIcon()}<span>${s.parallel.main.tip} ${s.parallel.side.tip}<\/span><\/div>
+          <div class="nav">
+            <button class="nbtn back" onclick="prevStep()" ${st.step===0?'disabled':''}>Back<\/button>
+            <button class="nbtn next" onclick="nextStep()">${isLastStep?'Finish':'Next step'}<\/button>
+          <\/div>`;
       }
     } else {
       html+=`
@@ -525,33 +486,19 @@ function renderCook(r){
         <\/div>
         <div class="steptext">${s.text}<\/div>`;
       if(isActive){
-        if(s.timer){ const k=timerKey(active,i); ensureTimer(k,s.timer); html+=timerBlock(k); }
         if(s.tip) html+=`<div class="tip">${tipIcon()}<span>${s.tip}<\/span><\/div>`;
+        html+=`
+          <div class="nav">
+            <button class="nbtn back" onclick="prevStep()" ${st.step===0?'disabled':''}>Back<\/button>
+            <button class="nbtn next" onclick="nextStep()">${isLastStep?'Finish':'Next step'}<\/button>
+          <\/div>`;
       }
     }
     html+=`<\/div>`;
   });
-  html+=`
-    <div class="nav">
-      <button class="nbtn back" onclick="prevStep()" ${st.step===0?'disabled':''}>Back<\/button>
-      <button class="nbtn next" onclick="nextStep()">${st.step===total-1?'Finish':'Done · next step'}<\/button>
-    <\/div>`;
   return html;
 }
-function timerBlock(key){
-  const t=T[key];
-  return `
-    <div class="timer">
-      <div class="tdisplay ${t.done?'ringing':''}" data-disp="${key}">${fmt(t.remaining)}<\/div>
-      <div class="tbtns">
-        <button class="tbtn go" data-go="${key}" onclick="startTimer('${key}')">Start timer<\/button>
-        <button class="tbtn ghost" onclick="pauseTimer('${key}')">Pause<\/button>
-        <button class="tbtn ghost" onclick="resetTimer('${key}')">Reset<\/button>
-      <\/div>
-    <\/div>`;
-}
 function tipIcon(){ return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.6 1 1.3 1 2.5h6c0-1.2.4-1.9 1-2.5A6 6 0 0012 3z" stroke="#b07c1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><\/svg>'; }
-function repaintTimers(){ Object.keys(T).forEach(k=>paintTimer(k)); }
 
 function nextStep(){
   const r=RECIPES[active], st=cook[active];
@@ -573,8 +520,7 @@ function renderFinish(){
     <\/div>`;
 }
 function restart(){
-  cook[active]={step:0,done:new Set(),timers:{}};
-  Object.keys(T).forEach(k=>{ if(k.startsWith(active+"-")){ clearInterval(T[k].iv); delete T[k]; } });
+  cook[active]={step:0,done:new Set()};
   render();
 }
 
