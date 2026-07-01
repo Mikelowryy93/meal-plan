@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ec">
+<meta name="apple-mobile-web-app-title" content="Meals">
+<title>Meal plan</title>
+
+<style>
+  :root{
+    --paper:#f6f3ec;
+    --card:#fffdf8;
+    --ink:#22251f;
+    --ink-soft:#5b6157;
+    --line:#e4dfd2;
+    --green:#2f7d52;
+    --green-deep:#23613f;
+    --green-wash:#e9f1ea;
+    --blue:#2b62b0;
+    --blue-wash:#e7eef9;
+    --amber:#c97f1c;
+    --amber-wash:#faefdb;
+    --done:#9aa194;
+    --red:#c0392b;
+    --radius:18px;
+    --shadow:0 1px 2px rgba(34,37,31,.05), 0 8px 24px rgba(34,37,31,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:14px 16px calc(56px + env(safe-area-inset-bottom));}
+
+  /* sticky top nav */
+  .sticky{
+    position:sticky;top:0;z-index:20;margin:0 -16px 18px;padding:10px 16px 10px;
+    background:rgba(246,243,236,.88);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(228,223,210,.7);
+  }
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:0 0 8px;}
+  .topnav{display:flex;gap:6px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:5px;}
+  .topbtn{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);padding:11px 14px;border-radius:11px;cursor:pointer;transition:.15s;}
+  .topbtn.active{background:var(--green);color:#fff;}
+
+  /* meal selector */
+  .selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .mealbtn{
+    text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:14px;padding:12px 13px;cursor:pointer;transition:.15s;font-family:inherit;min-height:44px;
+  }
+  .mealbtn.active{border-color:var(--green);background:var(--green-wash);}
+  .mealbtn .mtitle{font-family:Georgia,serif;font-weight:600;font-size:15px;line-height:1.2;color:var(--ink);}
+  .mealbtn .mmeta{font-size:12px;color:var(--ink-soft);margin-top:4px;font-variant-numeric:tabular-nums;}
+  .mealbtn .tagrow{margin-top:7px;}
+  .pill{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px;background:#efece2;color:var(--ink-soft);}
+  .pill.fish{background:#fdeee8;color:#b15c3c;}
+  .pill.lunch{background:#eef3df;color:#5e7a1f;}
+
+  /* card */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  .head{padding:20px 20px 18px;border-bottom:1px solid var(--line);}
+  .title{font-family:Georgia,serif;font-weight:600;font-size:26px;line-height:1.1;margin:0 0 5px;letter-spacing:-.01em;}
+  .sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 16px;}
+  .macros{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .macro{background:var(--paper);border-radius:12px;padding:10px 4px;text-align:center;}
+  .macro b{display:block;font-family:Georgia,serif;font-size:19px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;}
+  .macro span{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+  .macro.hero b{color:var(--green-deep);}
+  .meta{display:flex;gap:18px;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;}
+  .meta b{color:var(--ink);font-weight:600;}
+  .note{margin-top:14px;background:#fdeee8;border:1px solid #f3d6c8;border-radius:12px;padding:10px 12px;font-size:12.5px;color:#8a4a30;line-height:1.5;}
+  .note b{color:#7a3c24;}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;padding:12px 14px 0;background:var(--card);}
+  .tab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);padding:11px;cursor:pointer;border-radius:10px 10px 0 0;border-bottom:2.5px solid transparent;transition:.15s;}
+  .tab.active{color:var(--green-deep);border-bottom-color:var(--green);background:var(--green-wash);}
+  .panel{padding:18px 20px 22px;}
+
+  /* section headers */
+  .sech{font-family:Georgia,serif;font-weight:600;font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .sech::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--green);display:inline-block;}
+
+  /* prep + ingredients */
+  .prep{list-style:none;padding:0;margin:0 0 22px;}
+  .prep li{position:relative;padding:0 0 11px 22px;font-size:13.5px;line-height:1.55;}
+  .prep li::before{content:"";position:absolute;left:4px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--amber);}
+  .prep li:last-child{padding-bottom:0;}
+  .ing{list-style:none;padding:0;margin:0;}
+  .ing li{display:flex;align-items:flex-start;gap:11px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;min-height:44px;}
+  .ing li:last-child{border-bottom:none;}
+  .box{flex-shrink:0;width:22px;height:22px;border:2px solid #c9c2b1;border-radius:6px;margin-top:0;display:flex;align-items:center;justify-content:center;transition:.12s;}
+  .ing li.checked .box{background:var(--green);border-color:var(--green);}
+  .box svg{width:13px;height:13px;opacity:0;transition:.12s;}
+  .ing li.checked .box svg{opacity:1;}
+  .ing li.checked .iname{color:var(--done);text-decoration:line-through;}
+  .iqty{margin-left:auto;color:var(--ink-soft);font-size:13px;font-variant-numeric:tabular-nums;flex-shrink:0;padding-left:10px;text-align:right;line-height:1.35;}
+  .ing li.checked .iqty, .ing li.checked .iqty b, .ing li.checked .ifor{color:#c2c8bb;}
+  .ing .iqty b{color:var(--ink);font-weight:700;}
+  .ifor{display:block;font-size:11.5px;color:var(--ink-soft);font-weight:400;margin-top:2px;}
+  .ov{display:inline-block;font-size:10px;font-weight:700;background:var(--amber-wash);color:var(--amber);padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+
+  /* cook mode */
+  .progwrap{margin-bottom:16px;}
+  .progrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .progmeta{font-size:12px;color:var(--ink-soft);font-weight:600;font-variant-numeric:tabular-nums;}
+  .wakebtn{border:1.5px solid var(--line);background:var(--card);color:var(--ink-soft);font-family:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:20px;cursor:pointer;transition:.15s;}
+  .wakebtn.on{background:var(--green-wash);border-color:var(--green);color:var(--green-deep);}
+  .progbar{height:7px;background:#e9e4d7;border-radius:10px;overflow:hidden;}
+  .progfill{height:100%;background:var(--green);border-radius:10px;transition:width .35s ease;}
+
+  .step{border:1.5px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card);transition:.25s;overflow:hidden;}
+  .step .stephd{display:flex;align-items:center;gap:10px;padding:12px 14px;}
+  .step.active{border-color:var(--green);box-shadow:var(--shadow);}
+  .step.active .stephd{padding-bottom:0;}
+  .step.future{opacity:.55;}
+  .step.done{opacity:.6;background:var(--paper);}
+  .stepnum{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#e9e4d7;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:Georgia,serif;}
+  .step.active .stepnum{background:var(--green);color:#fff;}
+  .step.done .stepnum{background:var(--done);color:#fff;}
+  .steptitle{font-family:Georgia,serif;font-weight:600;font-size:15px;}
+  .step.done .steptitle{text-decoration:line-through;color:var(--done);font-weight:400;}
+  .donetick{margin-left:auto;color:var(--done);font-size:13px;font-weight:600;}
+  .upnext{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
+  .stepbody{padding:10px 14px 15px;}
+  .steptext{font-size:14.5px;line-height:1.55;}
+  .tip{margin-top:11px;background:var(--amber-wash);border-radius:10px;padding:9px 11px;font-size:12.5px;color:#8a5b14;display:flex;gap:7px;line-height:1.5;}
+  .tip svg{flex-shrink:0;margin-top:2px;}
+
+  /* parallel */
+  .par-banner{background:var(--blue-wash);border:1px solid #c3d4ee;border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:12px;}
+  .par-grid{display:grid;gap:10px;}
+  .par-col{border-radius:12px;padding:13px;border:1.5px solid;}
+  .par-col.main{background:var(--blue-wash);border-color:#bcd0ee;}
+  .par-col.side{background:var(--amber-wash);border-color:#ecd9b3;}
+  .par-label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;}
+  .par-col.main .par-label{color:var(--blue);}
+  .par-col.side .par-label{color:var(--amber);}
+  .par-text{font-size:13.5px;line-height:1.5;}
+
+  /* nav */
+  .nav{display:flex;gap:10px;margin-top:16px;}
+  .nbtn{border-radius:12px;padding:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:.12s;min-height:48px;}
+  .nbtn.back{flex:0 0 84px;background:#e9e4d7;color:var(--ink);}
+  .nbtn.back:disabled{opacity:.4;cursor:not-allowed;}
+  .nbtn.next{flex:1;background:var(--green);color:#fff;}
+
+  /* finish */
+  .finish{text-align:center;padding:34px 18px;}
+  .finish .big{font-size:46px;margin-bottom:6px;}
+  .finish h3{font-family:Georgia,serif;font-size:24px;font-weight:600;margin:0 0 6px;}
+  .finish p{color:var(--ink-soft);font-size:14px;margin:0 0 22px;}
+  .finish button{background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px 26px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;}
+
+  /* shopping */
+  .shop-top{display:flex;justify-content:space-between;align-items:center;background:var(--green-wash);border:1px solid #bcdcc6;border-radius:14px;padding:14px 16px;margin-bottom:8px;}
+  .shop-total{font-family:Georgia,serif;font-size:30px;font-weight:600;color:var(--green-deep);line-height:1;font-variant-numeric:tabular-nums;}
+  .shop-sub{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .shop-beat{text-align:right;font-size:11.5px;color:var(--ink-soft);line-height:1.35;}
+  .shop-beat b{font-family:Georgia,serif;font-size:16px;color:var(--ink);}
+  .shop-tools{display:flex;justify-content:space-between;align-items:center;margin:0 0 16px;}
+  .shop-count{font-size:12px;color:var(--ink-soft);font-weight:600;font-variant-numeric:tabular-nums;}
+  .resetbtn{border:1.5px solid var(--line);background:var(--card);color:var(--ink-soft);font-family:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:20px;cursor:pointer;}
+  .shop-note{font-size:12.5px;color:var(--ink-soft);margin:-2px 0 12px;line-height:1.5;}
+  .pantry{list-style:none;padding:0;margin:0;}
+  .pantry li{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line);min-height:44px;}
+  .pantry li:last-child{border-bottom:none;}
+  .pname{font-size:14px;flex:1;line-height:1.35;}
+  .pnote{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .pstock{display:flex;border:1.5px solid var(--line);border-radius:20px;overflow:hidden;flex-shrink:0;}
+  .pstock button{border:none;background:none;font-family:inherit;font-size:11px;font-weight:700;padding:7px 10px;cursor:pointer;color:var(--ink-soft);transition:.12s;white-space:nowrap;}
+  .pstock button.active-in{background:var(--green);color:#fff;}
+  .pstock button.active-low{background:var(--amber);color:#fff;}
+  .pstock button.active-buy{background:var(--red);color:#fff;}
+
+  .footnote{text-align:center;font-size:11.5px;color:#a8a293;margin-top:20px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="wrap-inner"></div>
+  <div class="footnote">Calorie and protein figures are estimates. Worth a sanity-check with your nutritionist on the saturated-fat side.</div>
+</div>
+
+<script>
+const RECIPES = [
+  {
+    id:"salmon", title:"Miso salmon, sesame greens & rice",
+    sub:"Sweet-savoury glaze, garlicky greens, fluffy rice. Cook the salmon fresh each night.",
+    tag:"fish", tagLabel:"Oily fish",
+    kcal:575, protein:41, carbs:48, fat:24, prep:"15 min", cook:"18 min", cost:"£2.80",
+    note:"Salmon reheats badly (rubbery, fishy). Tonight: cook all the rice and greens but only one fillet. Tomorrow: reheat the rice and greens until piping hot and pan-cook the second fillet fresh, it only takes 8 minutes.",
+    prepSteps:[
+      "Make the glaze: in a small bowl stir together 2 tbsp white miso paste, 2 tsp honey, 1 tbsp soy sauce and 1 tsp toasted sesame oil until smooth and glossy, like a thick paint. Divide it between two small bowls: one for tonight's fillet, one for tomorrow's. Put tomorrow's in the fridge.",
+      "Pat both salmon fillets dry all over with kitchen paper. Wet fish steams instead of crisping. Sprinkle the skin of each with a small pinch of salt. Put tomorrow's fillet back in the fridge.",
+      "Tip 100g rice into a sieve and rinse under the cold tap for about 20 seconds until the water runs clear, not cloudy. This rinses off surface starch so it won't turn gluey.",
+      "Cut the broccoli into bite-size florets. Cut the pak choi in half lengthways straight through the root so each half stays held together.",
+      "Peel and finely slice 2 garlic cloves.",
+      "Measure 150g frozen edamame into a bowl. No need to defrost."
+    ],
+    ingredients:[
+      {n:"Salmon fillets, skin on (about 130g each)", q:"2"},
+      {n:"White basmati or jasmine rice", q:"100g"},
+      {n:"Tenderstem or regular broccoli", q:"160g"},
+      {n:"Pak choi", q:"2"},
+      {n:"Frozen edamame (soya beans)", q:"150g"},
+      {n:"White (shiro) miso paste", q:"2 tbsp"},
+      {n:"Honey", q:"2 tsp"},
+      {n:"Soy sauce", q:"1 tbsp"},
+      {n:"Toasted sesame oil", q:"2 tsp"},
+      {n:"Garlic cloves", q:"2"},
+      {n:"Sesame seeds", q:"2 tsp"},
+      {n:"Salt", q:"pinch"}
+    ],
+    steps:[
+      {t:"Rice on", text:"Tip the rinsed rice into a small pan with 200ml cold water and a small pinch of salt. Bring to a fast boil (big rolling bubbles), then drop to the lowest heat and put the lid on tight. Cook for 12 minutes, then take it off the heat and leave the lid on until you plate up. Move straight to the next step, the salmon and greens cook while the rice steams.", tip:"Low heat and a tight lid is everything. Don't lift the lid at any point, the trapped steam is what cooks the grains. The rest off the heat at the end is what makes it fluffy."},
+      {parallel:{
+        main:{t:"Salmon skin-side down", text:"Heat a dry non-stick frying pan on medium for 1 minute. Lay one fillet in skin-side down and press it flat with a fish slice for 10 seconds so the whole skin meets the pan. Leave it completely alone for 5 minutes. You'll know it's ready to flip when the flesh has turned pale pink two-thirds of the way up the side. You can see this from the edge of the fillet without touching it.", tip:"Medium, not high. Salmon skin catches and burns fast on high heat. It should sizzle gently, not crackle and spit."},
+        side:{t:"Steam the greens", text:"In a second pan bring 2cm of water and a pinch of salt to the boil. Add the broccoli and the frozen edamame. Cook for 4 minutes.", tip:"Broccoli is ready when a fork slides in with a little resistance and it's still bright green, never grey and soft."}
+      }},
+      {t:"Flip and glaze", text:"Use a fish slice to turn the fillet over onto its flesh side. Spoon most of tonight's bowl of glaze over the top of the fillet, covering it evenly, and keep a spoonful back for plating. Cook for 2 more minutes. The salmon is done when it flakes apart easily under light pressure from a fork and looks opaque all the way through, not glassy or translucent.", tip:"Don't press down on the salmon while it cooks flesh-side down, you'll squeeze out the moisture. Just let it sit."},
+      {t:"Dress the greens", text:"Drop the halved pak choi into the greens pan for the last 1 minute, just until the leaves wilt and the stems turn tender. Drain everything well, then toss with 1 tsp sesame oil and the sliced raw garlic. If you've already cooked the orzo this week, squeeze over the zested lemon half from the fridge. Skip the lemon if you haven't.", tip:"Tossing the garlic in raw and warm off the heat keeps it sharp and fresh without the bitterness of burnt garlic."},
+      {t:"Plate up and box up", text:"Spoon half the rice into a bowl, pile half the greens alongside and sit the salmon on top. Drizzle over the spoonful of glaze you kept back and scatter with 1 tsp sesame seeds. Put the other half of the rice and greens in a container, let it cool for 20 minutes, then fridge it for tomorrow night.", tip:"Per serving: about 41g protein, 575 kcal. Tomorrow: reheat the rice until piping hot all the way through, and cook the second fillet exactly as you did tonight using the second bowl of glaze."}
+    ]
+  },
+  {
+    id:"chicken", title:"Japanese chicken rice bowl",
+    sub:"Soy and honey glazed thighs over steamed rice with a jammy egg, wilted spinach and sesame.",
+    tag:"", tagLabel:"Iron-rich",
+    kcal:565, protein:42, carbs:48, fat:18, prep:"10 min", cook:"20 min", cost:"£2.60",
+    note:"Reheats well. Boil both eggs tonight and keep the second one unpeeled in the fridge. Tomorrow, sit it in a mug of just-boiled water for 1 minute to take the chill off, or eat it cold. The chicken, rice and spinach reheat fine in the microwave until piping hot.",
+    prepSteps:[
+      "Make the glaze: mix together 2 tbsp soy sauce, 1 tbsp honey, 2 tbsp mirin, 1 tsp rice vinegar and 1 tsp ginger paste in a small bowl until smooth. No mirin in yet? Use 2 tbsp water instead, it still works, mirin just makes the glaze glossier and rounder. Either way the liquid matters: it gives the glaze time to reduce in the pan instead of burning on contact. Set aside.",
+      "Pat the chicken thighs dry all over with kitchen paper. Wet chicken steams instead of browning. Sprinkle both sides with a small pinch of salt.",
+      "Tip 160g rice into a sieve and rinse under the cold tap for 20 seconds until the water runs clear.",
+      "Trim and finely slice 3 spring onions. Cut off the root end, then slice the rest, white and green parts both, into thin rounds.",
+      "Measure out 150g frozen spinach into a bowl to start softening, or wash 150g fresh spinach and set aside.",
+      "Get 2 eggs out of the fridge and fill a small pan with water for them. Cold-from-the-fridge eggs are fine, the 6 minute timing below assumes it."
+    ],
+    ingredients:[
+      {n:"Skinless boneless chicken thighs", q:"4 (about 320g)"},
+      {n:"Basmati or jasmine rice", q:"160g"},
+      {n:"Eggs", q:"2"},
+      {n:"Frozen or fresh spinach", q:"150g"},
+      {n:"Spring onions", q:"3"},
+      {n:"Soy sauce", q:"2 tbsp"},
+      {n:"Honey", q:"1 tbsp"},
+      {n:"Mirin (or 2 tbsp water)", q:"2 tbsp"},
+      {n:"Rice vinegar", q:"1 tsp"},
+      {n:"Ginger paste", q:"1 tsp"},
+      {n:"Sesame seeds", q:"1 tsp"},
+      {n:"Sesame oil", q:"1 tsp"},
+      {n:"Olive oil", q:"1 tbsp"},
+      {n:"Salt", q:"pinch"}
+    ],
+    steps:[
+      {t:"Rice on, egg water on", text:"Tip the rinsed rice into a small pan with 320ml cold water and a pinch of salt. Bring to a fast boil, then drop to the lowest heat, put the lid on tight and cook for 12 minutes. When the time is up, take it off the heat and leave the lid on until you plate. At the same time, put the small pan of water for the eggs on high heat to come to the boil.", tip:"Both pans go on now so everything lands together. Don't lift the rice lid, the trapped steam does the cooking."},
+      {t:"Sear the chicken", text:"Heat 1 tbsp olive oil in a wide frying pan on medium-high for 1 minute until it looks shimmery. Lay the thighs in and don't move them for 5 minutes. The underside should be deep golden brown before you flip.", tip:"Leave them completely alone. The crust only forms if the meat sits still, and that crust is where the flavour is. If a thigh sticks when you try to lift it, it isn't ready to turn yet."},
+      {parallel:{
+        main:{t:"Flip the chicken", text:"Flip each thigh and cook for 4 more minutes on the other side. Then check it's cooked: cut into the thickest piece. The meat should be white all the way through with no pink, and the juices should run clear. If it needs more time, give it 2 more minutes and check again.", tip:"Don't guess on chicken, always cut in and check. Undercooked chicken is the one thing you can't fix on the plate."},
+        side:{t:"Boil the eggs", text:"Your egg water should be boiling by now. Lower both eggs in gently with a spoon and set a timer for exactly 6 minutes. When it goes off, lift them straight into a bowl of cold water.", tip:"6 minutes from the fridge gives a set white and a jammy yolk. The cold water stops the cooking dead and makes them easier to peel."}
+      }},
+      {t:"Glaze the chicken", text:"Pour the glaze into the pan over the chicken. It will bubble up straight away. Let it simmer and spoon it over each piece as it reduces, about 2 minutes, until it turns thick and shiny and coats the chicken like syrup. Take the pan off the heat.", tip:"The moment it starts smelling toasty rather than sweet, it's about to burn. Off the heat immediately if that happens, the residual heat will finish it."},
+      {t:"Wilt the spinach", text:"With the pan off the heat, push the chicken to one side and add the spinach. Stir it through the leftover glaze in the pan for 30 seconds until just wilted. If it needs more heat, put the pan back on low for 1 minute.", tip:"You want the spinach just collapsed, still with some body, not cooked down to nothing."},
+      {t:"Build the bowls", text:"Peel one egg and cut it in half. Spoon half the rice into a bowl, lay half the chicken on top, add half the spinach and the egg halves. Spoon over any glaze left in the pan, then scatter with half the spring onion, half the sesame seeds and a small drizzle of sesame oil. Box the other half of everything (keep the second egg unpeeled), cool for 20 minutes, then fridge for tomorrow.", tip:"Per serving: about 42g protein, 565 kcal."}
+    ]
+  },
+  {
+    id:"orzo", title:"Prawn, courgette & tomato orzo",
+    sub:"One pan, no draining. The orzo cooks in the stock and goes creamy as it absorbs it.",
+    tag:"", tagLabel:"One pan",
+    kcal:575, protein:44, carbs:58, fat:16, prep:"10 min", cook:"20 min", cost:"£2.90",
+    note:"Reheats fine. Add a splash of water as you warm it through, since the orzo firms up and drinks the sauce in the fridge. Reheat until piping hot all the way through, prawns included.",
+    prepSteps:[
+      "If the prawns are frozen, defrost them fully and pat them very dry with kitchen paper. Wet prawns won't take any colour and just stew.",
+      "Halve 200g cherry tomatoes.",
+      "Trim the ends off the courgette and dice it into roughly 1cm cubes.",
+      "Peel and finely slice 3 garlic cloves.",
+      "Zest half a lemon: rub it down the fine side of a grater, taking only the bright yellow skin and turning the lemon as soon as the white shows. The white pith underneath is bitter, so stop the moment you hit it. Keep the zested lemon half in the fridge and squeeze it over the greens on salmon night so it doesn't go to waste.",
+      "Grate 30g parmesan on the fine side of the grater.",
+      "Dissolve 1 stock cube in 500ml just-boiled water."
+    ],
+    ingredients:[
+      {n:"Raw king prawns, peeled", q:"320g"},
+      {n:"Orzo (rice-shaped pasta)", q:"160g"},
+      {n:"Courgette", q:"1"},
+      {n:"Cherry tomatoes", q:"200g"},
+      {n:"Garlic cloves", q:"3"},
+      {n:"Lemon (zest only)", q:"half"},
+      {n:"Parmesan", q:"30g"},
+      {n:"Chicken or veg stock cube", q:"1"},
+      {n:"Olive oil", q:"1 tbsp"},
+      {n:"Salt", q:"small pinch"}
+    ],
+    steps:[
+      {t:"Sizzle the garlic", text:"Heat 1 tbsp olive oil in a wide pan on medium for 1 minute. Add the sliced garlic and cook for 1 minute until pale gold.", tip:"Keep it on medium. Garlic should turn pale gold and smell sweet and nutty. The moment it browns it turns bitter, so don't walk away."},
+      {t:"Soften the courgette", text:"Add the diced courgette and a small pinch of salt. Cook, stirring now and then, for 4 minutes until the edges are golden.", tip:"Ready when a fork slides through a cube easily with no crunch left."},
+      {t:"Toast the orzo", text:"Tip in the 160g orzo and the halved tomatoes. Stir for 1 minute so every grain of orzo gets coated in the oil.", tip:"A quick toast gives the orzo a nuttier flavour and stops the grains clumping together later."},
+      {t:"Simmer", text:"Pour in the 500ml hot stock and stir everything together. Bring to a gentle bubble and cook for about 9 minutes, stirring every couple of minutes to stop it sticking to the base. If it looks like it's drying out before the orzo is cooked, add a small splash of hot water and keep going.", tip:"Done when the orzo is tender with the tiniest bite left and the liquid has reduced to a loose, creamy sauce that coats the back of a spoon."},
+      {t:"Prawns in", text:"Stir in the prawns and cook for about 3 minutes until every one has turned from grey-blue to pink and curled into a loose C-shape.", tip:"A loose C is perfect. A tight O-shape means overcooked and rubbery, so pull them off the heat the moment there's no grey left."},
+      {t:"Finish and box up", text:"Off the heat, stir through the lemon zest and 20g of the parmesan. Taste it before adding any salt: the stock and parmesan are already salty, so it may not need more. Plate half, scatter with the last 10g parmesan, and box the other half. Cool for 20 minutes, then fridge for tomorrow.", tip:"Per serving: about 44g protein, 575 kcal."}
+    ]
+  },
+  {
+    id:"omelette", title:"Smoked salmon & greens omelette",
+    sub:"A fast, high-protein lunch. Veg wilted through, salmon folded in at the end so it stays silky.",
+    tag:"lunch", tagLabel:"Lunch · serves 1",
+    kcal:330, protein:31, carbs:6, fat:20, prep:"5 min", cook:"8 min", cost:"£1.90",
+    note:"Swap the smoked salmon for 60g leftover cooked chicken or 50g lean ham if you'd rather. All three keep the saturated fat lower than loading it with cheese.",
+    prepSteps:[
+      "Crack 3 eggs into a bowl. Add a small pinch of salt and a small pinch of black pepper, then beat with a fork for 20 seconds until the yolk and white are fully combined and slightly frothy. The froth cooks up lighter.",
+      "Thinly slice 3 chestnut mushrooms.",
+      "Halve 4 cherry tomatoes.",
+      "Tear 50g smoked salmon into rough strips (or shred 60g cooked chicken)."
+    ],
+    ingredients:[
+      {n:"Medium eggs", q:"3"},
+      {n:"Smoked salmon (or cooked chicken/ham)", q:"50g"},
+      {n:"Spinach, large handful", q:"50g"},
+      {n:"Chestnut mushrooms", q:"3"},
+      {n:"Cherry tomatoes", q:"4"},
+      {n:"Olive oil", q:"1 tsp"},
+      {n:"Salt", q:"pinch"},
+      {n:"Black pepper", q:"pinch"}
+    ],
+    steps:[
+      {t:"Cook the veg", text:"Heat 1 tsp olive oil in a non-stick frying pan on medium for 1 minute. Add the sliced mushrooms and a small pinch of salt and cook for 2 minutes, stirring once or twice. Then add the spinach and cherry tomatoes and cook for 1 more minute until the spinach has fully wilted and collapsed.", tip:"Mushrooms are ready when they've shrunk, turned golden and released then reabsorbed their water. That's when they taste savoury rather than squeaky."},
+      {t:"Eggs in", text:"Pour the beaten eggs over the veg and tilt the pan so they spread into an even layer. Leave it without touching for 30 seconds.", tip:"Don't stir. Let the bottom set into a single sheet, that's what holds the omelette together."},
+      {t:"Pull and set", text:"Using a spatula, push one edge of the egg into the middle of the pan, then tilt the pan slightly so the runny egg on top flows into the gap you just made. Move to the next edge and do the same thing: push in, tilt, let the runny egg flow in. Keep going around the pan like this for about 2 minutes until the top of the omelette looks just barely set, still a little glossy but not wet and sloshing.", tip:"Pull it off the heat while the top still looks slightly underdone. It carries on cooking from the heat of the pan once you plate it up, and an overcooked omelette goes rubbery and dry."},
+      {t:"Fold and serve", text:"Scatter the smoked salmon over one half. Fold the empty half over it with the spatula and slide it onto a plate.", tip:"Per serving: about 31g protein, 330 kcal."}
+    ]
+  }
+];
+
+const SHOP = {
+  buy:[
+    {n:"Salmon fillets, skin on", q:"2 (~130g each)", cost:4.00, for:"Salmon"},
+    {n:"Skinless boneless chicken thighs", q:"320g", cost:2.50, for:"Chicken rice bowl"},
+    {n:"Raw king prawns, peeled", q:"320g", cost:3.50, for:"Orzo"},
+    {n:"Smoked salmon", q:"1 pack (~100g)", cost:2.50, for:"Omelette lunch", note:"uses 50g, the rest freezes fine"},
+    {n:"Eggs", q:"box of 6", cost:1.30, for:"Chicken bowl + omelette", overlap:true, note:"uses 5 of 6"},
+    {n:"Spring onions", q:"1 bunch", cost:0.45, for:"Chicken rice bowl"},
+    {n:"Broccoli or tenderstem", q:"160g", cost:0.85, for:"Salmon"},
+    {n:"Pak choi", q:"2 heads", cost:0.70, for:"Salmon"},
+    {n:"Courgette", q:"1 medium", cost:0.40, for:"Orzo"},
+    {n:"Cherry tomatoes", q:"250g punnet", cost:0.85, for:"Orzo + omelette", overlap:true, note:"200g in the orzo, the rest for the omelette"},
+    {n:"Chestnut mushrooms", q:"1 pack (~200g)", cost:0.55, for:"Omelette lunch"},
+    {n:"Lemon (for zest)", q:"1", cost:0.30, for:"Orzo, then salmon night"},
+    {n:"Frozen edamame", q:"150g (from bag)", cost:1.50, for:"Salmon", note:"bag lasts a few weeks"},
+    {n:"White miso paste", q:"1 small tub", cost:2.00, for:"Salmon", note:"tub lasts months"},
+    {n:"Mirin", q:"1 bottle", cost:2.60, for:"Chicken glaze", note:"one-off, lasts months. World foods aisle."},
+    {n:"Orzo", q:"500g bag", cost:0.90, for:"Orzo", note:"bag lasts 2-3 meals"}
+  ],
+  pantry:[
+    {n:"Basmati or jasmine rice", note:"salmon and chicken bowl both use it, a bag lasts a few meals"},
+    {n:"Mirin", note:"chicken glaze, 2 tbsp a week once bought"},
+    {n:"Garlic", note:"salmon greens and orzo"},
+    {n:"Parmesan", note:"a block lasts ~2 weeks at 30g a meal"},
+    {n:"Rice vinegar & ginger paste", note:"chicken glaze"},
+    {n:"Sesame seeds & sesame oil", note:"salmon and chicken bowl"},
+    {n:"Soy sauce & honey", note:"both glazes"},
+    {n:"Olive oil", note:"store cupboard"},
+    {n:"Frozen spinach", note:"chicken bowl and omelette"},
+    {n:"Chicken stock cubes", note:"the orzo uses one"},
+    {n:"Salt & black pepper", note:"store cupboard"}
+  ]
+};
+
+/* ---- persistence ---- */
+const STORE_KEY = "mealplan_v2";
+function loadStore(){
+  try{ const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+}
+function saveStore(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      shop:[...shopChecked],
+      pantry:pantryState,
+      ing:ingChecked,
+      cook:Object.fromEntries(RECIPES.map((r,i)=>[r.id,{step:cook[i].step,done:[...cook[i].done]}]))
+    }));
+  }catch(e){}
+}
+
+/* ---- state ---- */
+let shopChecked = new Set();
+let pantryState = SHOP.pantry.map(()=>0);
+let ingChecked = {};   // recipeId -> {index:true}
+let cook = {};         // recipeIndex -> {step, done:Set}
+let active = 0;
+let view = "meals";
+let tab = "ing";
+
+(function initState(){
+  RECIPES.forEach((r,i)=>{ cook[i]={step:0,done:new Set()}; ingChecked[r.id]={}; });
+  const s = loadStore();
+  if(Array.isArray(s.shop)) s.shop.forEach(i=>{ if(i>=0 && i<SHOP.buy.length) shopChecked.add(i); });
+  if(Array.isArray(s.pantry)) SHOP.pantry.forEach((p,i)=>{ if([0,1,2].includes(s.pantry[i])) pantryState[i]=s.pantry[i]; });
+  if(s.ing) RECIPES.forEach(r=>{ if(s.ing[r.id]) ingChecked[r.id]=s.ing[r.id]; });
+  if(s.cook) RECIPES.forEach((r,i)=>{
+    const c=s.cook[r.id];
+    if(c){
+      cook[i].step = Math.min(Math.max(0, c.step|0), r.steps.length);
+      (c.done||[]).forEach(d=>{ if(d>=0 && d<r.steps.length) cook[i].done.add(d); });
+    }
+  });
+})();
+
+/* ---- wake lock (keep screen on while cooking) ---- */
+let wakeLock = null;
+const wakeSupported = ("wakeLock" in navigator);
+async function toggleWake(){
+  try{
+    if(wakeLock){ await wakeLock.release(); wakeLock=null; }
+    else{
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", ()=>{ wakeLock=null; paintWake(); });
+    }
+  }catch(e){ wakeLock=null; }
+  paintWake();
+}
+function paintWake(){
+  const b=document.getElementById("wakebtn");
+  if(b){ b.classList.toggle("on", !!wakeLock); b.textContent = wakeLock ? "Screen staying on" : "Keep screen on"; }
+}
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="visible" && wakeLock===null){ paintWake(); }
+});
+
+/* ---- top-level render ---- */
+function render(){
+  const wi=document.getElementById("wrap-inner");
+  const topnav=`
+    <div class="sticky">
+      <div class="eyebrow">On rotation · cook once, eat twice<\/div>
+      <div class="topnav">
+        <button class="topbtn ${view==='meals'?'active':''}" onclick="setView('meals')">Meals<\/button>
+        <button class="topbtn ${view==='shop'?'active':''}" onclick="setView('shop')">Shopping list<\/button>
+      <\/div>
+    <\/div>`;
+  if(view==='shop'){
+    wi.innerHTML=topnav+`<div class="card"><div class="panel" style="padding-top:20px">${renderShop()}<\/div><\/div>`;
+  } else {
+    const selHTML=`<div class="selector">`+RECIPES.map((r,i)=>`
+      <button class="mealbtn ${i===active?'active':''}" onclick="selectMeal(${i})">
+        <div class="mtitle">${r.title}<\/div>
+        <div class="mmeta">${r.protein}g protein · ${r.kcal} kcal<\/div>
+        <div class="tagrow"><span class="pill ${r.tag}">${r.tagLabel}<\/span><\/div>
+      <\/button>`).join("")+`<\/div>`;
+    wi.innerHTML=topnav+selHTML+`<div class="card" id="card"><\/div>`;
+    renderCard();
+  }
+  paintWake();
+}
+function setView(v){ view=v; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+function selectMeal(i){ active=i; tab="ing"; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+function setTab(t){ tab=t; render(); }
+
+/* ---- recipe card ---- */
+function renderCard(){
+  const r=RECIPES[active];
+  const c=document.getElementById("card");
+  if(!c) return;
+  c.innerHTML=`
+    <div class="head">
+      <h1 class="title">${r.title}<\/h1>
+      <p class="sub">${r.sub}<\/p>
+      <div class="macros">
+        <div class="macro hero"><b>${r.kcal}<\/b><span>kcal<\/span><\/div>
+        <div class="macro hero"><b>${r.protein}g<\/b><span>protein<\/span><\/div>
+        <div class="macro"><b>${r.carbs}g<\/b><span>carbs<\/span><\/div>
+        <div class="macro"><b>${r.fat}g<\/b><span>fat<\/span><\/div>
+      <\/div>
+      <div class="meta"><span>Prep <b>${r.prep}<\/b><\/span><span>Cook <b>${r.cook}<\/b><\/span><span>Cost <b>${r.cost}<\/b>/serving<\/span><\/div>
+      ${r.note?`<div class="note"><b>Heads up.<\/b> ${r.note}<\/div>`:""}
+    <\/div>
+    <div class="tabs">
+      <button class="tab ${tab==='ing'?'active':''}" onclick="setTab('ing')">Ingredients<\/button>
+      <button class="tab ${tab==='cook'?'active':''}" onclick="setTab('cook')">Cook mode<\/button>
+    <\/div>
+    <div class="panel">${tab==='ing'?renderIng(r):renderCook(r)}<\/div>`;
+}
+
+/* ---- ingredients ---- */
+const tickSvg='<svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><\/svg>';
+function toggleIng(rid,i){
+  ingChecked[rid][i] = !ingChecked[rid][i];
+  saveStore(); render();
+}
+function renderIng(r){
+  return `
+    <h2 class="sech">Before you start<\/h2>
+    <ul class="prep">${r.prepSteps.map(p=>`<li>${p}<\/li>`).join("")}<\/ul>
+    <h2 class="sech">Ingredients<\/h2>
+    <ul class="ing">
+      ${r.ingredients.map((it,i)=>{
+        const ck = ingChecked[r.id][i] ? "checked" : "";
+        return `
+        <li class="${ck}" onclick="toggleIng('${r.id}',${i})">
+          <span class="box">${tickSvg}<\/span>
+          <span class="iname">${it.n}<\/span>
+          <span class="iqty">${it.q}<\/span>
+        <\/li>`;
+      }).join("")}
+    <\/ul>`;
+}
+
+/* ---- cook mode ---- */
+function renderCook(r){
+  const st=cook[active];
+  const total=r.steps.length;
+  if(st.step>=total) return renderFinish();
+  const pct=Math.round((st.done.size/total)*100);
+  const isLastStep=(st.step===total-1);
+  let html=`
+    <div class="progwrap">
+      <div class="progrow">
+        <span class="progmeta">Step ${st.step+1} of ${total}<\/span>
+        ${wakeSupported?'<button class="wakebtn" id="wakebtn" onclick="toggleWake()">Keep screen on<\/button>':''}
+      <\/div>
+      <div class="progbar"><div class="progfill" style="width:${pct}%"><\/div><\/div>
+    <\/div>`;
+  r.steps.forEach((s,i)=>{
+    const isDone=st.done.has(i), isActive=i===st.step, isFuture=i>st.step;
+    const cls=isDone?"done":(isActive?"active":(isFuture?"future":""));
+    const stTitle = s.parallel ? (s.parallel.main.t+" + "+s.parallel.side.t.toLowerCase()) : s.t;
+    html+=`<div class="step ${cls}">
+      <div class="stephd">
+        <span class="stepnum">${i+1}<\/span>
+        <span class="steptitle">${stTitle}<\/span>
+        ${isDone?'<span class="donetick">✓ Done<\/span>':(isFuture?'<span class="upnext">Up next<\/span>':'')}
+      <\/div>`;
+    if(isActive){
+      html+=`<div class="stepbody">`;
+      if(s.parallel){
+        html+=`
+          <div class="par-banner">Two pans running at the same time. Start both together.<\/div>
+          <div class="par-grid">
+            <div class="par-col main">
+              <div class="par-label">${s.parallel.main.t}<\/div>
+              <div class="par-text">${s.parallel.main.text}<\/div>
+            <\/div>
+            <div class="par-col side">
+              <div class="par-label">${s.parallel.side.t}<\/div>
+              <div class="par-text">${s.parallel.side.text}<\/div>
+            <\/div>
+          <\/div>
+          <div class="tip">${tipIcon()}<span>${s.parallel.main.tip} ${s.parallel.side.tip}<\/span><\/div>`;
+      } else {
+        html+=`<div class="steptext">${s.text}<\/div>`;
+        if(s.tip) html+=`<div class="tip">${tipIcon()}<span>${s.tip}<\/span><\/div>`;
+      }
+      html+=`
+        <div class="nav">
+          <button class="nbtn back" onclick="prevStep()" ${st.step===0?'disabled':''}>Back<\/button>
+          <button class="nbtn next" onclick="nextStep()">${isLastStep?'Finish':'Next step'}<\/button>
+        <\/div>
+      <\/div>`;
+    }
+    html+=`<\/div>`;
+  });
+  return html;
+}
+function tipIcon(){ return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.6 1 1.3 1 2.5h6c0-1.2.4-1.9 1-2.5A6 6 0 0012 3z" stroke="#b07c1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><\/svg>'; }
+
+function nextStep(){
+  const st=cook[active];
+  st.done.add(st.step);
+  st.step++;
+  saveStore(); render();
+}
+function prevStep(){
+  const st=cook[active];
+  if(st.step>0){ st.step--; st.done.delete(st.step); saveStore(); render(); }
+}
+function renderFinish(){
+  return `
+    <div class="finish">
+      <div class="big">🍽️<\/div>
+      <h3>That's dinner done.<\/h3>
+      <p>Plate one up tonight, box the other for tomorrow.<\/p>
+      <button onclick="restart()">Start again<\/button>
+    <\/div>`;
+}
+function restart(){
+  cook[active]={step:0,done:new Set()};
+  saveStore(); render();
+}
+
+/* ---- shopping list ---- */
+function shopTotals(){
+  let total=0, remaining=0;
+  SHOP.buy.forEach((it,i)=>{ total+=it.cost; if(!shopChecked.has(i)) remaining+=it.cost; });
+  return {total, remaining};
+}
+function toggleBuy(i){ shopChecked.has(i)?shopChecked.delete(i):shopChecked.add(i); saveStore(); render(); }
+function cyclePantryTo(i,s){ pantryState[i]=s; saveStore(); render(); }
+function resetShop(){ shopChecked.clear(); saveStore(); render(); }
+function renderShop(){
+  const {total,remaining}=shopTotals();
+  let html=`
+    <div class="shop-top">
+      <div>
+        <div class="shop-total">£${remaining.toFixed(2)}<\/div>
+        <div class="shop-sub">left to buy · £${total.toFixed(2)} total<\/div>
+      <\/div>
+      <div class="shop-beat">vs Gousto<br><b>≈ £35<\/b><\/div>
+    <\/div>
+    <div class="shop-tools">
+      <span class="shop-count">${shopChecked.size} of ${SHOP.buy.length} ticked<\/span>
+      <button class="resetbtn" onclick="resetShop()">Clear ticks<\/button>
+    <\/div>
+    <h2 class="sech">The shop · 3 dinners + 1 lunch<\/h2>
+    <ul class="ing">`;
+  SHOP.buy.forEach((it,i)=>{
+    const ck=shopChecked.has(i);
+    const sub=it.for+(it.note?' · '+it.note:'');
+    html+=`
+      <li class="${ck?'checked':''}" onclick="toggleBuy(${i})">
+        <span class="box">${tickSvg}<\/span>
+        <span class="iname">${it.n}${it.overlap?' <span class="ov">shared<\/span>':''}<span class="ifor">${sub}<\/span><\/span>
+        <span class="iqty"><b>${it.q}<\/b><br>£${it.cost.toFixed(2)}<\/span>
+      <\/li>`;
+  });
+  html+=`<\/ul>
+    <h2 class="sech" style="margin-top:24px">Cupboard staples<\/h2>
+    <p class="shop-note">Set the stock level for each. These stay saved between visits, so update them as things run out.<\/p>
+    <ul class="pantry">`;
+  SHOP.pantry.forEach((it,i)=>{
+    const s=pantryState[i];
+    html+=`
+      <li>
+        <span class="pname">${it.n}<span class="pnote">${it.note}<\/span><\/span>
+        <span class="pstock">
+          <button class="${s===0?'active-in':''}" onclick="cyclePantryTo(${i},0)">In stock<\/button>
+          <button class="${s===1?'active-low':''}" onclick="cyclePantryTo(${i},1)">Low<\/button>
+          <button class="${s===2?'active-buy':''}" onclick="cyclePantryTo(${i},2)">Buy<\/button>
+        <\/span>
+      <\/li>`;
+  });
+  html+=`<\/ul>`;
+  return html;
+}
+
+document.addEventListener("DOMContentLoaded", render);
+</script>
+</body>
+</html>
